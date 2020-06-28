@@ -17,11 +17,11 @@ type==="auth"?
 
 class api{
     constructor(url){this.url = url;}
-    call = (method="",{url=this.url,path="/",params=""},cookie=false)=>axios[method](
+    call = (method="",{url=this.url,path="/",params=""},cookie=cookieJar)=>axios[method](
             url+path,
             params,
-            // {jar:cookie,
-            // withCredentials: true}
+            {jar:cookie,
+            withCredentials: true}
         )
     .then(({data,headers})=>({
         data: cheerio.load(data),
@@ -31,16 +31,11 @@ class api{
     ))
     test = async (user,pass,cookie)=>{
         if(user&&pass&&cookie){
-            let auth = tough.Cookie;
+            let authJar = new tough.CookieJar();
             if(typeof cookie === "object" && cookie.length){
-                cookie.map(e=>auth.parse(e))
+                cookie.map(e=>authJar.setCookie(e,this.url))
             }
-            return this.call("post",{
-                path:"/init",
-                params:getSI("auth")(user,pass)
-            }).then(a=>{
-                console.log(a.cookie);
-            });
+            return this.call("post",{params:getSI("auth")(user,pass)},authJar);
         }else{
             return this.call("get",{}).then(({headers})=>headers["set-cookie"]?headers["set-cookie"]:[]);
         }
