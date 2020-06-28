@@ -29,15 +29,36 @@ class api{
         cookie,
         router:{url,path}}
     ))
+    get = ()=> this.call("get",{})
+    .then(({headers})=>headers["set-cookie"]?headers["set-cookie"]:[]);
+    set = (type,params,cookie)=>{
+        let DataJar = new tough.CookieJar();
+        if(typeof cookie === "object" && cookie.length){
+            cookie.map(e=>DataJar.setCookie(e,this.url))
+            switch(type){
+                case "auth":
+                    let { user , pass } = params;
+                    return this.call("post",{params:getSI("auth")(user,pass)},DataJar)
+                    .then(({headers})=>headers["set-cookie"]?headers["set-cookie"]:[])
+                    .then(a=>{
+                        console.log(a,cookie);
+                        return a;
+                    });
+                case "accion":
+                    let { get , path } = params;
+                    return this.call("post",{path,params:get},DataJar)
+                default:
+                    return {error:"require type acction"}
+            }
+        }else{
+            return {error:"require cookie array how list"}
+        }
+    }
     test = async (user,pass,cookie)=>{
         if(user&&pass&&cookie){
-            let authJar = new tough.CookieJar();
-            if(typeof cookie === "object" && cookie.length){
-                cookie.map(e=>authJar.setCookie(e,this.url))
-            }
-            return this.call("post",{params:getSI("auth")(user,pass)},authJar);
+            return this.set("auth",{user,pass},cookie)
         }else{
-            return this.call("get",{}).then(({headers})=>headers["set-cookie"]?headers["set-cookie"]:[]);
+            return this.get()
         }
     }
 }
