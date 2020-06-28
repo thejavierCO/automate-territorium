@@ -40,10 +40,6 @@ class api{
                     let { user , pass } = params;
                     return this.call("post",{params:getSI("auth")(user,pass)},DataJar)
                     .then(({headers})=>headers["set-cookie"]?headers["set-cookie"]:[])
-                    .then(a=>{
-                        console.log(a,cookie);
-                        return a;
-                    });
                 case "accion":
                     let { get , path } = params;
                     return this.call("post",{path,params:get},DataJar)
