@@ -51,17 +51,4 @@ app.post("/setAction",({body:{cookie,type,params}},res,next)=>{
     })
 })
 
-// app.use("/",({body:{user="",pass=""},headers},res,next)=>{
-//     tr.test()
-//     .then(e=>tr.test(user,pass,e))
-//     .then(({data})=>{
-//         if(!data.text)throw "require text";
-//         res.render("main",{string:data.text()});
-//     })
-//     .catch(a=>{
-//         console.log(a);
-//         res.render("main",{string:a.toString()});
-//     })
-// });
-
 app.listen(app.get('port'),()=>{console.log('run',app.get('port'))});
