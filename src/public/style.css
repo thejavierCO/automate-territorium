@@ -1,0 +1,23 @@
+body{
+    display: grid;
+    background: url("https://img.wallpapersafari.com/desktop/1600/900/26/78/rzR6cW.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    color:#fff;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+main{
+    border:1px solid #fff;
+    padding:10px;
+    text-align: center;
+    width: 20vw;
+    height: 150px;
+    background-color: rgba(0,0,0,0.5);
+}

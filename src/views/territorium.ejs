@@ -1,0 +1,21 @@
+<% layout("base") %>
+
+<main>
+    <%if(typeof type !== "undefined"){%>
+        <%if(type==="login"){%>
+            <script>getSession();</script>
+            <h1><%= type %></h1>
+            <form id="login">
+                <input type="text" id="user"><br>
+                <input type="text" id="pass"><br>
+                <input type="submit" value="enviar">
+            </form>
+        <%}else if(type==="unlogin"){ %>
+            <h1><%= type %></h1>
+        <%}else{%>
+            <h1><%= type %></h1>
+        <%}%>
+    <%}else{%>
+        <div>init</div>
+    <%}%>
+</main>
