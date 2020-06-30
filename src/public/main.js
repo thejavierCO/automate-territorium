@@ -2,7 +2,7 @@ let getSession = ()=>fetch("/api/getSession")
     .then(e=>e.json())
     .then(e=>{
         if(typeof e === "object"&&e.length){
-            sessionStorage.setItem("LoginData",JSON.stringify(e));
+            if(sessionStorage.getItem("LoginData") === null) sessionStorage.setItem("LoginData",JSON.stringify(e));
             return {
                 status:true,
                 data:e,
@@ -51,16 +51,38 @@ let setLogin = (user,pass,cookies)=>fetch("/api/getAuth",{
         }
     })
 
+let setAction = (cookie=[],categoria=0,indice=0)=>fetch("/api/setAction",{
+    method:"POST",
+    headers:{
+        "Content-type":"application/json"
+    },
+    body:JSON.stringify({
+        "type":"accion",
+        "params":{
+            "get":"proceso=posts&categoria="+categoria+"&indice="+indice,
+            "path":"/post_actions.php"
+        },
+        "cookie":cookie
+    })
+})
+.then(e=>e.json())
+.then(e=>{
+    console.log(e);
+})
+
 document.addEventListener("DOMContentLoaded",()=>{
     let token = JSON.parse(sessionStorage.getItem("LoginData"));
     let login = document.querySelector("#login");
     let user = document.querySelector("#user");
     let pass = document.querySelector("#pass");
+    let main = document.querySelector("main");
     login.addEventListener("submit",(a)=>{
         a.preventDefault();
         setLogin(user.value,pass.value,token)
-        .then(e=>{
-            console.log(e);
+        .then(({status,log})=>{
+            if(status){
+                main.innerHTML = log;
+            }
         })
         .catch(e=>{
             console.warn(e);

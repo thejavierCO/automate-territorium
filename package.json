@@ -18,6 +18,7 @@
     "ejs-mate": "^3.0.0",
     "express": "^4.17.1",
     "form-urlencoded": "^4.1.4",
+    "html2json": "^1.0.2",
     "morgan": "^1.10.0",
     "set-cookie-parser": "^2.4.6",
     "tough-cookie": "^4.0.0",
