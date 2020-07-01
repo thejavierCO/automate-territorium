@@ -16,13 +16,16 @@ let getTags = (tag="",json={})=>{
     $(tag).map((a)=>{
         let r = {
             href:position.attr("href"),
-            keys:position.attr("class"),
-            test:position.text()
+            value:position.attr("value"),
+            class:position.attr("class"),
+            text:position.html(),
+            id:position.attr("id"),
+            tag
         };
         if(($.length-1)!==a)position = position.next()
         result.push(r);
     })
-    return result;
+    return result.length===0?false:result;
 }
 
 app.get("/getSession",(req,res,next)=>{
@@ -66,21 +69,13 @@ app.post("/setAction",({body:{cookie,type,params}},res,next)=>{
                     id:+((att).slice(
                         ((att).indexOf("[")===-1?((att).indexOf("_")===-1?0:(att).indexOf("_")):(att).indexOf("["))+1,
                         ((att).indexOf("[")===-1?((att).indexOf("_")===-1?0:(att).length):(att).length-1))),
-                    data:(child.filter(({tag},b)=>tag==="div"?true:false)).map(({child})=>{
-                        return (child.filter(({tag},b)=>tag==="div"?true:false).map(e=>{
-                            let $ = cheerio.load(tohtml(e));
-                            if($("a").length!==0){
-                                return {
-                                    type:"a",
-                                    href:$("a").attr("href"),
-                                    content:$.html(),
-                                    get:getTags("a",e).filter(e=>e["href"]?true:false)
-                                };
-                            }else{
-                                return e;
-                            }
-                        }));
-                    })
+                    data:(child.filter(({tag},b)=>tag==="div"?true:false)).map(({child})=>child.filter(({tag},b)=>tag==="div"?true:false).map(e=>({
+                        a:getTags("a",e),
+                        input:getTags("input",e),
+                        p:getTags("p",e),
+                        small:getTags("small",e),
+                        html:tohtml(e)
+                    })))
                 }
             })
             return result.filter(({type})=>type==="post");
