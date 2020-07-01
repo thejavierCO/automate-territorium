@@ -13,6 +13,9 @@ const tr = test!==false?
 
 let getdata = (html)=>{
     let test = (a,b)=>a.filter(e=>{
+        let tags = b.split("|");
+        
+        // continua por aqui
         // e.tag==="div"?true:(
         //     e.tag==="p"?true:(
         //         e.tag==="a"?true:(
