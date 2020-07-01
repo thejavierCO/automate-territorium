@@ -2,6 +2,7 @@ const api = require("./territorio");
 const cheerio = require("cheerio");
 const { html2json:tojson , json2html:tohtml } = require("html2json");
 const { Router } = require("express");
+const e = require("express");
 const app = Router();
 
 const test = false;
@@ -10,22 +11,42 @@ const tr = test!==false?
 (new api("https://webhook.site/8fe70860-9770-41f4-8b13-89815c9e0852"))
 :(new api("https://conalep.territorio.la/"));
 
-let getTags = (tag="",json={})=>{
-    let result = [];
-    let $ = cheerio.load(tohtml(json)),position = $(tag);
-    $(tag).map((a)=>{
-        let r = {
-            href:position.attr("href"),
-            value:position.attr("value"),
-            class:position.attr("class"),
-            text:position.html(),
-            id:position.attr("id"),
-            tag
-        };
-        if(($.length-1)!==a)position = position.next()
-        result.push(r);
+let getdata = (html)=>{
+    let test = (a,b)=>a.filter(e=>{
+        // e.tag==="div"?true:(
+        //     e.tag==="p"?true:(
+        //         e.tag==="a"?true:(
+        //             e.tag==="small"?true:(
+        //                 e.tag==="input"?true:(
+        //                     e.tag==="button"?true:(
+        //                         e.tag==="input"?true:(
+        //                             e.node==="text"?(true):false
+        //                         )
+        //                     )
+        //                 )
+        //             )
+        //         )
+        //     )
+        // )
+    }
+    )
+    .map(e=>{
+        let {child,text} = e
+        if(child){
+            child = test(child);
+            e["child"] = child;
+            return e;
+        }else if(text){
+            e["text"] = text.replace(/( )/g,"");
+            return e;
+        }else{
+            return e;
+        }
     })
-    return result.length===0?false:result;
+    return test(html,"div|p|a|small|input|button|text")
+    .map(e=>{
+        return tohtml(e);
+    });
 }
 
 app.get("/getSession",(req,res,next)=>{
@@ -69,13 +90,7 @@ app.post("/setAction",({body:{cookie,type,params}},res,next)=>{
                     id:+((att).slice(
                         ((att).indexOf("[")===-1?((att).indexOf("_")===-1?0:(att).indexOf("_")):(att).indexOf("["))+1,
                         ((att).indexOf("[")===-1?((att).indexOf("_")===-1?0:(att).length):(att).length-1))),
-                    data:(child.filter(({tag},b)=>tag==="div"?true:false)).map(({child})=>child.filter(({tag},b)=>tag==="div"?true:false).map(e=>({
-                        a:getTags("a",e),
-                        input:getTags("input",e),
-                        p:getTags("p",e),
-                        small:getTags("small",e),
-                        html:tohtml(e)
-                    })))
+                    data:getdata(child)
                 }
             })
             return result.filter(({type})=>type==="post");
